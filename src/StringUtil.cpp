@@ -422,7 +422,7 @@ std::string StringUtil::format(time_t timet , /// 要格式化的时间字符串
 		return asctime(tmptr);
 
 	char buffer[1024];
-	size_t ret = strftime(buffer,sizeof(buffer),specifers,tmptr);
+	strftime(buffer,sizeof(buffer),specifers,tmptr);
 	return buffer;
 };
 
