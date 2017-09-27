@@ -20,14 +20,14 @@ public:
 	 *		addmonth--入参，增减的差值
 	 *@return：增减后的月份
 	 */
-	int AddMonth(int yearmonth, int addmonth);
+	static int AddMonth(int yearmonth, int addmonth);
 
 	/*@action: 用于当前时间的字符串精确到微妙
 	 *@param:
 	 *      *strSrc--入参，带判断字符串
 	 *@return： char*
 	 */
-	char* GetSysdateUsec(char *info);
+	static char* GetSysdateUsec(char *info);
 
 	/*@action: 根据时间格式串生成系统时间
 	 *@param:
@@ -35,7 +35,11 @@ public:
 	 *      stime-初参；
 	 *@retrun:
 	 */
-	char* GetCurrentTime(int format, char* stime);
+	static char* GetCurrentTime(int format, char* stime);
+private:
+	DateUtil();
+	DateUtil(const DateUtil &du);
+	DateUtil& operator = (const DateUtil &du);
 };
 
 

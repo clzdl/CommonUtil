@@ -32,6 +32,11 @@ public:
 	 *@return：0-success；-1-fail
 	 */
 	static int Md5StringSummary(std::string strData , std::string &outMd5Sum);
+
+private:
+	Md5Util();
+	Md5Util(const Md5Util& mu);
+	Md5Util& operator = (const Md5Util& mu);
 };
 
 

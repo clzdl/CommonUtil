@@ -15,7 +15,12 @@ public:
 	* 输出参数：无
 	* 返回值  ：字符串得到的hash值
 	*/
-	unsigned  int  ELFHash(const char   * str);
+	static unsigned  int  ELFHash(const char   * str);
+
+private:
+	HashUtil();
+	HashUtil(const HashUtil &hu);
+	HashUtil& operator = (const HashUtil &hu);
 
 };
 }

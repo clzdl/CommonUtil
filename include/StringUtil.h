@@ -480,7 +480,11 @@ class StringUtil {
                 	std::vector< std::string > & lines ///命令输出行
 					) ;
 
-    
+
+private:
+    StringUtil();
+    StringUtil(const StringUtil &su);
+    StringUtil& operator = (const StringUtil &su);
 
 };
 

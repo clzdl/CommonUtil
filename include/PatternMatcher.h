@@ -20,6 +20,10 @@ public:
      */
 	static bool matches(const char *pattern, const char *str);
 
+private:
+	PatternMatcher();
+	PatternMatcher(const PatternMatcher& pm);
+	PatternMatcher& operator = (const PatternMatcher &pm);
 };
 
 }

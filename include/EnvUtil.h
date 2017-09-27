@@ -21,7 +21,12 @@ public:
 	 *		value--入参，待替换字符串
 	 *@return：none
 	 */
-	void EnvVarReplace(std::string &value);
+	static void EnvVarReplace(std::string &value);
+
+private:
+	EnvUtil();
+	EnvUtil(const EnvUtil &eu);
+	EnvUtil& operator = (const EnvUtil &eu);
 };
 
 

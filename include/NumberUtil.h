@@ -35,7 +35,12 @@ public:
 	 *      strSrc--入参，带判断字符串
 	 *@return：  true/ false
 	 */
-	bool IsDigitString(std::string strSrc);
+	static bool IsDigitString(std::string strSrc);
+
+private:
+	NumberUtil();
+	NumberUtil(const NumberUtil &nu);
+	NumberUtil& operator = (const NumberUtil &nu);
 };
 
 }

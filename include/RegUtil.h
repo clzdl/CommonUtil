@@ -21,7 +21,12 @@ public:
 	 *		pattern--入参，正则串
 	 *@return：true/false
 	 */
-	bool is_match(const std::string& str, const std::string& pattern);
+	static bool is_match(const std::string& str, const std::string& pattern);
+
+private:
+	RegUtil();
+	RegUtil(const RegUtil &ru);
+	RegUtil& operator = (const RegUtil &ru);
 };
 
 }

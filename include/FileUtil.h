@@ -23,7 +23,7 @@ public:
 	 *		inFileName--入参，文件路径
 	 *@return：0-success；-1-fail
 	 */
-	short CheckUniqueCopy( const char *inFileName );
+	static short CheckUniqueCopy( const char *inFileName );
 
 	/*@action:用于判断文件是否存在
 	 *@param：
@@ -65,14 +65,14 @@ public:
 	 *		strPath--入参，目录路径
 	 *@return：增减后的月份
 	 */
-	bool IsDirectoryExist(const char *strPath);
+	static bool IsDirectoryExist(const char *strPath);
 
 	/*@action:用于创建目录，必须确保父目录存在
 	 *@param：
 	 *		path--入参，目录路径
 	 *@return：0-success；-1-fail
 	 */
-	int Mkdir(const char *path);
+	static int Mkdir(const char *path);
 
 	/*@action:用于移动文件
 	 *@param：
@@ -80,7 +80,12 @@ public:
 	 *		strDest--入参，目的路径
 	 *@return：0-success；-1-fail
 	 */
-	int MoveFile(const char *strSrc ,const char *strDest);
+	static int MoveFile(const char *strSrc ,const char *strDest);
+
+private:
+	FileUtil();
+	FileUtil(const FileUtil &fu);
+	FileUtil& operator = (const FileUtil &fu);
 };
 
 
