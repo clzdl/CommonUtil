@@ -16,6 +16,15 @@ namespace CommonUtils
 class FileUtil
 {
 public:
+
+
+	/*@action:用于文件已被锁定，用于实现程序单实例
+	 *@param：
+	 *		inFileName--入参，文件路径
+	 *@return：0-success；-1-fail
+	 */
+	short CheckUniqueCopy( const char *inFileName );
+
 	/*@action:用于判断文件是否存在
 	 *@param：
 	 *		strFile--入参，文件路径

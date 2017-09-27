@@ -10,9 +10,54 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include "string.h"
 
 namespace CommonUtils
 {
+
+
+short FileUtil::CheckUniqueCopy( const char *inFileName )
+{
+    int pid_file_fd;
+    int flag;
+    char line[1048];
+
+    struct flock lock;
+
+    /* open the PID file, create if nonexistent */
+    pid_file_fd = open(inFileName, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if(pid_file_fd == -1)
+    {
+        return -1;
+    }
+
+    lock.l_type   = F_WRLCK;
+    lock.l_start  = 0;
+    lock.l_whence = SEEK_SET;
+    lock.l_len    = 0;
+    flag = fcntl(pid_file_fd, F_SETLK, &lock);
+    if(flag < 0)
+    {
+       if(errno == EACCES || errno == EAGAIN)
+       {
+          close(pid_file_fd);
+          return -1;
+       }
+       else
+       {
+          close(pid_file_fd);
+          return -1;
+       }
+    }
+
+    ftruncate(pid_file_fd, 0);
+    sprintf(line, "%ld\n", (long)getpid());
+    write(pid_file_fd, line, strlen(line));
+
+    return 0;
+}
 
 bool FileUtil::IsFileExist(const std::string &strFile)
 {
