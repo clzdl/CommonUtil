@@ -142,14 +142,62 @@ protected:
 
 
 
+/** 标准C++异常包装器 */
+class __std_exception_wrapper : public std::exception {
+    std::string m_classname;
+    std::string m_message;
+
+    friend inline std::ostream & operator << (std::ostream & out, const __std_exception_wrapper & e) {
+        out << e.m_classname << ": " << e.m_message;
+        return out;
+    }
+
+public:
+    __std_exception_wrapper(const exception & e) {
+        m_classname = typeid(e).name();
+        m_message = e.what();
+    }
+
+    const char * what() const throw() {
+        return m_message.c_str();
+    }
+
+    virtual ~__std_exception_wrapper() throw() {
+    }
+};
+
+
+#define ASSIGN_VMESSAGE(m_message, msg) \
+    char buf[2048]; \
+    va_list ap; \
+    va_start(ap, msg); \
+    vsnprintf(buf, sizeof(buf), msg, ap); \
+    va_end(ap); \
+    m_message = buf
+
+
+
+
+//如果是Exception类型, 利用clone复制原因.
+//如果ECAUSE和cause的类型一致, 可以通过copy构造函数复制.
+//只能通过包装器, 把必要的信息包装到__std_exception_wrapper中.
+#define ASSIGN_CAUSE(m_cause, cause) \
+    const Exception * e = dynamic_cast < const Exception * > (& cause); \
+    if (e != 0) \
+        m_cause = counted_ptr < std::exception > (e->clone()); \
+    else if (typeid(cause) == typeid(const ECAUSE &)) \
+        m_cause = counted_ptr < std::exception > (new ECAUSE(cause)); \
+    else \
+        m_cause = counted_ptr < std::exception > (new __std_exception_wrapper(cause))
+
 /** 定义一个新的异常类型 */
 #define DECLARE_EXCEPTION(ExpClass, BaseClass)                                                        \
-   class ExpClass : public BaseClass {                                                                   \
-   public:                                                                                               \
+class ExpClass : public BaseClass {                                                                   \
+public:                                                                                               \
    ExpClass(const ExpClass& e) :                                                                       \
    BaseClass(e) {                                                                                    \
    }                                                                                                   \
-   ExpClass(int code, const string& msg) :                                                                       \
+   ExpClass(int code, const std::string& msg) :                                                                       \
    BaseClass(code, msg) {                                                                                    \
    }                                                                                                   \
    \
@@ -158,32 +206,32 @@ protected:
      ASSIGN_VMESSAGE(BaseClass::m_message, msg);                                                                             \
    }                                                                                                    \
    \
-   ExpClass(const string& file, int line, Grade::Type grade, int code, const string & msg)                     \
+   ExpClass(const std::string& file, int line, Grade::Type grade, int code, const std::string & msg)                     \
    :BaseClass(file, line, grade, code, msg) {                                                         \
    }                                                                                                 \
-   ExpClass(const string & file, int line, Grade::Type grade, int code, const char*  msg, ...) { \
+   ExpClass(const std::string & file, int line, Grade::Type grade, int code, const char*  msg, ...) { \
      m_file = file; m_line = line; m_grade = grade; m_code = code; \
      ASSIGN_VMESSAGE(BaseClass::m_message, msg);                                                                       \
    }                                                                                                \
    \
    template<typename ECAUSE>                                                                           \
-   ExpClass(const string& file, int line, const ECAUSE& cause, Grade::Type grade, int code, const string & msg)\
+   ExpClass(const std::string& file, int line, const ECAUSE& cause, Grade::Type grade, int code, const std::string & msg)\
    :BaseClass(file, line, cause, grade, code, msg) {                                                  \
    }                                                                                                    \
    \
    template < typename ECAUSE >                                                                        \
-   ExpClass(const string & file, int line, const ECAUSE & cause, Grade::Type grade, int code, const char*  msg, ...) { \
+   ExpClass(const std::string & file, int line, const ECAUSE & cause, Grade::Type grade, int code, const char*  msg, ...) { \
     BaseClass::m_file = file; BaseClass::m_line = line; BaseClass::m_grade = grade; BaseClass::m_code = code; \
     ASSIGN_CAUSE(BaseClass::m_cause, cause);                                                                            \
     ASSIGN_VMESSAGE(BaseClass::m_message, msg);                                                                           \
    }                                                                                               \
    \
    Exception* clone() const throw() {                                                                  \
-   return new ExpClass(*this);                                                                       \
+	   return new ExpClass(*this);                                                                       \
    }                                                                                                   \
-   protected:                                                                                          \
+protected:                                                                                          \
     ExpClass() {}                                                                                     \
-   }
-   
+}
+
 }
 #endif //_EXCEPTION_H_

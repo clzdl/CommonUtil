@@ -4,29 +4,6 @@
 
 namespace CommonUtils{
 
-/** 标准C++异常包装器 */
-class __std_exception_wrapper : public std::exception {
-    std::string m_classname;
-    std::string m_message;
-
-    friend inline std::ostream & operator << (std::ostream & out, const __std_exception_wrapper & e) {
-        out << e.m_classname << ": " << e.m_message;
-        return out;
-    }
-
-public:
-    __std_exception_wrapper(const exception & e) {
-        m_classname = typeid(e).name();
-        m_message = e.what();
-    }
-
-    const char * what() const throw() {
-        return m_message.c_str();
-    }
-
-    virtual ~__std_exception_wrapper() throw() {
-    }
-};
 
 
 inline std::ostream & operator << (std::ostream &out, const std::exception &e) {
@@ -73,13 +50,7 @@ inline std::ostream & operator << (std::ostream & out, const Exception & e) {
     return out;
 }
 
-#define ASSIGN_VMESSAGE(m_message, msg) \
-    char buf[2048]; \
-    va_list ap; \
-    va_start(ap, msg); \
-    vsnprintf(buf, sizeof(buf), msg, ap); \
-    va_end(ap); \
-    m_message = buf
+
 
 
 inline Exception::Exception(const Exception & e)
@@ -126,17 +97,6 @@ inline Exception::Exception(const std::string &file, int line, Grade::Type grade
     ASSIGN_VMESSAGE(Exception::m_message, msg);    
 }
 
-//如果是Exception类型, 利用clone复制原因.
-//如果ECAUSE和cause的类型一致, 可以通过copy构造函数复制.
-//只能通过包装器, 把必要的信息包装到__std_exception_wrapper中.
-#define ASSIGN_CAUSE(m_cause, cause) \
-    const Exception * e = dynamic_cast < const Exception * > (& cause); \
-    if (e != 0) \
-        m_cause = counted_ptr < exception > (e->clone()); \
-    else if (typeid(cause) == typeid(const ECAUSE &)) \
-        m_cause = counted_ptr < exception > (new ECAUSE(cause)); \
-    else \
-        m_cause = counted_ptr < exception > (new __std_exception_wrapper(cause))
 
 template < typename ECAUSE >
 inline Exception::Exception(const std::string &file, int line, const ECAUSE &cause, Grade::Type grade, int code, const std::string & msg)
