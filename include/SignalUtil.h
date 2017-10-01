@@ -21,7 +21,7 @@ public:
 	/**
 	 * 捕捉信号
 	 */
-	static void CatchSignal(std::vector<int> signals,void (*Func)(int) );
+	static void CatchSignal(std::vector<int> &signals,void (*Func)(int) );
 
 private:
 	SignalUtil();

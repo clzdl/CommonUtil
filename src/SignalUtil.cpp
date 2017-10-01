@@ -12,7 +12,7 @@
 
 namespace CommonUtils
 {
-void SignalUtil::CatchSignal(std::vector<int> signals,void (*Func)(int) )
+void SignalUtil::CatchSignal(std::vector<int> &signals,void (*Func)(int) )
 {
 	struct sigaction sa;
 	sa.sa_handler = Func;
