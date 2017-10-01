@@ -18,7 +18,8 @@ U_OBJS =CharsetUtil.cpp \
 	PatternMatcher.cpp \
 	RegUtil.cpp \
 	StringUtil.cpp \
-	Exception.cpp
+	Exception.cpp \
+	SignalUtil.cpp
 
 
 #链接库集合
