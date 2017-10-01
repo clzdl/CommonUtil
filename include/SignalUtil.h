@@ -11,13 +11,17 @@
 #include <vector>
 namespace CommonUtils
 {
+
+/**
+ * 信号工具类
+ */
 class SignalUtil
 {
 public:
 	/**
 	 * 捕捉信号
 	 */
-	void CatchSignal(std::vector<int> signals,void (*Func)(int) );
+	static void CatchSignal(std::vector<int> signals,void (*Func)(int) );
 
 private:
 	SignalUtil();
