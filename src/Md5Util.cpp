@@ -42,7 +42,7 @@ int Md5Util::Md5FileSummary(std::string strFileName , std::string &outMd5Sum)
 	for(int i = 0; i < 16; i++)
 	{
 		memset(strHex , 0 ,sizeof(strHex));
-		sprintf(strHex , "%02.2x" , md5[i]);
+		snprintf(strHex ,sizeof(strHex), "%02x" , md5[i]);
 		outMd5Sum.append(strHex);
 	}
 	return 0;
@@ -63,7 +63,7 @@ int Md5Util::Md5StringSummary(std::string strData , std::string &outMd5Sum)
     for(int i = 0; i < 16; i++)
     {
         memset(strHex , 0 ,sizeof(strHex));
-        sprintf(strHex , "%02.2x" , md5[i]);
+        snprintf(strHex ,sizeof(strHex), "%02x" , md5[i]);
         outMd5Sum.append(strHex);
     }
     return 0;
