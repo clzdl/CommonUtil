@@ -9,6 +9,8 @@
 
 #include "SignalUtil.h"
 #include <signal.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace CommonUtils
 {
@@ -24,4 +26,11 @@ void SignalUtil::CatchSignal(std::vector<int> &signals,void (*Func)(int) )
 		sigaction(*it,  &sa, 0);
 	}
 }
+
+int SignalUtil::SendSignal(int signal)
+{
+	pid_t pid = getpid();
+	return kill(pid , signal);
+}
+
 }

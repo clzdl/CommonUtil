@@ -23,6 +23,11 @@ public:
 	 */
 	static void CatchSignal(std::vector<int> &signals,void (*Func)(int) );
 
+	/**
+	 * 向本进程发送信号
+	 */
+	static int SendSignal(int signal);
+
 private:
 	SignalUtil();
 	SignalUtil(const SignalUtil &su);
