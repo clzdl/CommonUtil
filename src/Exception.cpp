@@ -6,14 +6,14 @@ namespace CommonUtils{
 
 
 
-inline std::ostream & operator << (std::ostream &out, const std::exception &e) {
+std::ostream & operator << (std::ostream &out, const std::exception &e) {
     out << typeid(e).name() << ": " << e.what();
     return out;
 }
 
 
 
-inline const char* Grade::toString(Grade::Type grade) {
+const char* Grade::toString(Grade::Type grade) {
 	if(grade == Grade::WARNING)
 		return "WARNING";
 	else if(grade == Grade::MINOR)
@@ -26,7 +26,7 @@ inline const char* Grade::toString(Grade::Type grade) {
 		return "INDETERMINATE";	
 }
 
-inline std::ostream & operator << (std::ostream & out, const Exception & e) {
+std::ostream & operator << (std::ostream & out, const Exception & e) {
     out << "[" << Grade::toString(e.getGrade()) << "] " ;
     out << "[" << e.getFile() << ":" << e.getLine() << "] ";
     out << typeid(e).name() << "-" <<e.getCode() << ": " << e.what()<<std::endl;
@@ -53,7 +53,7 @@ inline std::ostream & operator << (std::ostream & out, const Exception & e) {
 
 
 
-inline Exception::Exception(const Exception & e)
+Exception::Exception(const Exception & e)
 :m_file(e.m_file),
  m_line(e.m_line),
  m_grade(e.m_grade),
@@ -63,7 +63,7 @@ inline Exception::Exception(const Exception & e)
 {
 }
 
-inline Exception::Exception(int code, const std::string &msg)
+Exception::Exception(int code, const std::string &msg)
 :m_line(-1),
  m_grade(Grade::INDETERMINATE),
  m_code(code),
@@ -71,7 +71,7 @@ inline Exception::Exception(int code, const std::string &msg)
 {
 }
     
-inline Exception::Exception(int code, const char *msg, ...)
+Exception::Exception(int code, const char *msg, ...)
 :m_line(-1),
  m_grade(Grade::INDETERMINATE),
  m_code(code)
@@ -79,7 +79,7 @@ inline Exception::Exception(int code, const char *msg, ...)
     ASSIGN_VMESSAGE(Exception::m_message, msg);
 }  
 
-inline Exception::Exception(const std::string &file, int line, Grade::Type grade, int code, const std::string &msg)
+Exception::Exception(const std::string &file, int line, Grade::Type grade, int code, const std::string &msg)
 :m_file(file),
  m_line(line),
  m_grade(grade),
@@ -88,7 +88,7 @@ inline Exception::Exception(const std::string &file, int line, Grade::Type grade
 {
 }
 
-inline Exception::Exception(const std::string &file, int line, Grade::Type grade, int code, const char *msg, ...)
+Exception::Exception(const std::string &file, int line, Grade::Type grade, int code, const char *msg, ...)
 :m_file(file),
  m_line(line),
  m_grade(grade),
@@ -99,7 +99,7 @@ inline Exception::Exception(const std::string &file, int line, Grade::Type grade
 
 
 template < typename ECAUSE >
-inline Exception::Exception(const std::string &file, int line, const ECAUSE &cause, Grade::Type grade, int code, const std::string & msg)
+Exception::Exception(const std::string &file, int line, const ECAUSE &cause, Grade::Type grade, int code, const std::string & msg)
 :m_file(file),
  m_line(line),
  m_grade(grade),
@@ -110,7 +110,7 @@ inline Exception::Exception(const std::string &file, int line, const ECAUSE &cau
 }
 
 template < typename ECAUSE >
-inline Exception::Exception(const std::string &file, int line, const ECAUSE &cause, Grade::Type grade, int code, const char*  msg, ...)
+Exception::Exception(const std::string &file, int line, const ECAUSE &cause, Grade::Type grade, int code, const char*  msg, ...)
 :m_file(file),
  m_line(line),
  m_grade(grade),
@@ -121,50 +121,50 @@ inline Exception::Exception(const std::string &file, int line, const ECAUSE &cau
 }
 
 /** 析构函数 */
-inline Exception::~Exception() throw() {
+Exception::~Exception() throw() {
 }
 
 /** 标准C++异常信息 */
-inline const char * Exception::what() const throw() {
+const char * Exception::what() const throw() {
     return m_message.c_str();
 }
 
 /** 异常代码 */
-inline Grade::Type Exception::getGrade() const throw() {
+Grade::Type Exception::getGrade() const throw() {
     return m_grade;
 }
 
 /** 异常代码 */
-inline int Exception::getCode() const throw() {
+int Exception::getCode() const throw() {
     return m_code;
 }
 
 /** 异常信息 */
-inline const std::string& Exception::getMessage() const throw() {
+const std::string& Exception::getMessage() const throw() {
     return m_message;
 }
 
 /** 文件名 */
-inline const std::string& Exception::getFile() const throw() {
+const std::string& Exception::getFile() const throw() {
     return m_file;
 }
 
 /** 行号 */
-inline int Exception::getLine() const throw() {
+int Exception::getLine() const throw() {
     return m_line;
 }
 
 /** 根原因, 如果没有根原因, 则返回 NULL */
-inline const std::exception* Exception::getCause() const throw() {
+const std::exception* Exception::getCause() const throw() {
     return m_cause.get();
 }
 
 /** 克隆当前异常对象 */
-inline Exception * Exception::clone() const throw() {
+Exception * Exception::clone() const throw() {
     return new Exception(* this);
 }
 
-inline std::string Exception::toString() const {
+std::string Exception::toString() const {
     std::ostringstream buffer;
     buffer << *this;
     return buffer.str();
