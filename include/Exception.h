@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdarg.h>
-
+#include <typeinfo>
 #include "CountedPtr.h"
 
 namespace CommonUtils{
@@ -102,46 +102,6 @@ protected:
     counted_ptr < exception > m_cause;
 };
 
-/** 抛出一个异常 */
-#define THROW(expclass, msg) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, -1, msg)
-#define THROW_P1(expclass, msg, p1) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, -1, msg, p1)
-#define THROW_P2(expclass, msg, p1, p2) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, -1, msg, p1, p2)
-#define THROW_P3(expclass, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, -1, msg, p1, p2, p3)
-#define THROW_P4(expclass, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, -1, msg, p1, p2, p3, p4)
-
-#define THROW_C(expclass, code, msg) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, code, msg)
-#define THROW_C_P1(expclass, code, msg, p1) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, code, msg, p1)
-#define THROW_C_P2(expclass, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, code, msg, p1, p2)
-#define THROW_C_P3(expclass, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, code, msg, p1, p2, p3)
-#define THROW_C_P4(expclass, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, Grade::INDETERMINATE, code, msg, p1, p2, p3, p4)
-
-#define THROW_GC(expclass, grade, code, msg) throw expclass(__FILE__, __LINE__, grade, code, msg)
-#define THROW_GC_P1(expclass, grade, code, msg, p1) throw expclass(__FILE__, __LINE__, grade, code, msg, p1)
-#define THROW_GC_P2(expclass, grade, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, grade, code, msg, p1, p2)
-#define THROW_GC_P3(expclass, grade, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, grade, code, msg, p1, p2, p3)
-#define THROW_GC_P4(expclass, grade, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, grade, code, msg, p1, p2, p3, p4)
-
-/** 抛出一个带原因的异常 */
-#define THROW_A(expclass, cause, msg) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, -1, msg)
-#define THROW_A_P1(expclass, cause, msg, p1) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, -1, msg, p1)
-#define THROW_A_P2(expclass, cause, msg, p1, p2) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, -1, msg, p1, p2)
-#define THROW_A_P3(expclass, cause, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, -1, msg, p1, p2, p3)
-#define THROW_A_P4(expclass, cause, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, -1, msg, p1, p2, p3, p4)
-
-#define THROW_AC(expclass, cause, code, msg) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, code, msg)
-#define THROW_AC_P1(expclass, cause, code, msg, p1) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, code, msg, p1)
-#define THROW_AC_P2(expclass, cause, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, code, msg, p1, p2)
-#define THROW_AC_P3(expclass, cause, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, code, msg, p1, p2, p3)
-#define THROW_AC_P4(expclass, cause, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, cause, Grade::INDETERMINATE, code, msg, p1, p2, p3, p4)
-
-#define THROW_AGC(expclass, cause, grade, code, msg) throw expclass(__FILE__, __LINE__, cause, grade, code, msg)
-#define THROW_AGC_P1(expclass, cause, grade, code, msg, p1) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1)
-#define THROW_AGC_P2(expclass, cause, grade, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1, p2)
-#define THROW_AGC_P3(expclass, cause, grade, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1, p2, p3)
-#define THROW_AGC_P4(expclass, cause, grade, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1, p2, p3, p4)
-
-
-
 /** 标准C++异常包装器 */
 class __std_exception_wrapper : public std::exception {
     std::string m_classname;
@@ -166,6 +126,8 @@ public:
     }
 };
 
+}
+
 
 #define ASSIGN_VMESSAGE(m_message, msg) \
     char buf[2048]; \
@@ -184,11 +146,11 @@ public:
 #define ASSIGN_CAUSE(m_cause, cause) \
     const Exception * e = dynamic_cast < const Exception * > (& cause); \
     if (e != 0) \
-        m_cause = counted_ptr < std::exception > (e->clone()); \
+        m_cause = CommonUtils::counted_ptr < std::exception > (e->clone()); \
     else if (typeid(cause) == typeid(const ECAUSE &)) \
-        m_cause = counted_ptr < std::exception > (new ECAUSE(cause)); \
+        m_cause = CommonUtils::counted_ptr < std::exception > (new ECAUSE(cause)); \
     else \
-        m_cause = counted_ptr < std::exception > (new __std_exception_wrapper(cause))
+        m_cause = CommonUtils::counted_ptr < std::exception > (new CommonUtils::__std_exception_wrapper(cause))
 
 /** 定义一个新的异常类型 */
 #define DECLARE_EXCEPTION(ExpClass, BaseClass)                                                        \
@@ -202,25 +164,25 @@ public:                                                                         
    }                                                                                                   \
    \
    ExpClass(int code, const char*  msg, ...)  { \
-     m_line = -1; m_grade = Grade::INDETERMINATE; m_code = code; \
+     m_line = -1; m_grade = CommonUtils::Grade::INDETERMINATE; m_code = code; \
      ASSIGN_VMESSAGE(BaseClass::m_message, msg);                                                                             \
    }                                                                                                    \
    \
-   ExpClass(const std::string& file, int line, Grade::Type grade, int code, const std::string & msg)                     \
+   ExpClass(const std::string& file, int line, CommonUtils::Grade::Type grade, int code, const std::string & msg)                     \
    :BaseClass(file, line, grade, code, msg) {                                                         \
    }                                                                                                 \
-   ExpClass(const std::string & file, int line, Grade::Type grade, int code, const char*  msg, ...) { \
+   ExpClass(const std::string & file, int line, CommonUtils::Grade::Type grade, int code, const char*  msg, ...) { \
      m_file = file; m_line = line; m_grade = grade; m_code = code; \
      ASSIGN_VMESSAGE(BaseClass::m_message, msg);                                                                       \
    }                                                                                                \
    \
    template<typename ECAUSE>                                                                           \
-   ExpClass(const std::string& file, int line, const ECAUSE& cause, Grade::Type grade, int code, const std::string & msg)\
+   ExpClass(const std::string& file, int line, const ECAUSE& cause, CommonUtils::Grade::Type grade, int code, const std::string & msg)\
    :BaseClass(file, line, cause, grade, code, msg) {                                                  \
    }                                                                                                    \
    \
    template < typename ECAUSE >                                                                        \
-   ExpClass(const std::string & file, int line, const ECAUSE & cause, Grade::Type grade, int code, const char*  msg, ...) { \
+   ExpClass(const std::string & file, int line, const ECAUSE & cause, CommonUtils::Grade::Type grade, int code, const char*  msg, ...) { \
     BaseClass::m_file = file; BaseClass::m_line = line; BaseClass::m_grade = grade; BaseClass::m_code = code; \
     ASSIGN_CAUSE(BaseClass::m_cause, cause);                                                                            \
     ASSIGN_VMESSAGE(BaseClass::m_message, msg);                                                                           \
@@ -233,5 +195,45 @@ protected:                                                                      
     ExpClass() {}                                                                                     \
 }
 
-}
+/** 抛出一个异常 */
+#define THROW(expclass, msg) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, -1, msg)
+#define THROW_P1(expclass, msg, p1) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, -1, msg, p1)
+#define THROW_P2(expclass, msg, p1, p2) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, -1, msg, p1, p2)
+#define THROW_P3(expclass, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, -1, msg, p1, p2, p3)
+#define THROW_P4(expclass, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, -1, msg, p1, p2, p3, p4)
+
+#define THROW_C(expclass, code, msg) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, code, msg)
+#define THROW_C_P1(expclass, code, msg, p1) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, code, msg, p1)
+#define THROW_C_P2(expclass, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, code, msg, p1, p2)
+#define THROW_C_P3(expclass, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, code, msg, p1, p2, p3)
+#define THROW_C_P4(expclass, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, CommonUtils::Grade::INDETERMINATE, code, msg, p1, p2, p3, p4)
+
+#define THROW_GC(expclass, grade, code, msg) throw expclass(__FILE__, __LINE__, grade, code, msg)
+#define THROW_GC_P1(expclass, grade, code, msg, p1) throw expclass(__FILE__, __LINE__, grade, code, msg, p1)
+#define THROW_GC_P2(expclass, grade, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, grade, code, msg, p1, p2)
+#define THROW_GC_P3(expclass, grade, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, grade, code, msg, p1, p2, p3)
+#define THROW_GC_P4(expclass, grade, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, grade, code, msg, p1, p2, p3, p4)
+
+/** 抛出一个带原因的异常 */
+#define THROW_A(expclass, cause, msg) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, -1, msg)
+#define THROW_A_P1(expclass, cause, msg, p1) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, -1, msg, p1)
+#define THROW_A_P2(expclass, cause, msg, p1, p2) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, -1, msg, p1, p2)
+#define THROW_A_P3(expclass, cause, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, -1, msg, p1, p2, p3)
+#define THROW_A_P4(expclass, cause, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, -1, msg, p1, p2, p3, p4)
+
+#define THROW_AC(expclass, cause, code, msg) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, code, msg)
+#define THROW_AC_P1(expclass, cause, code, msg, p1) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, code, msg, p1)
+#define THROW_AC_P2(expclass, cause, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, code, msg, p1, p2)
+#define THROW_AC_P3(expclass, cause, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, code, msg, p1, p2, p3)
+#define THROW_AC_P4(expclass, cause, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, cause, CommonUtils::Grade::INDETERMINATE, code, msg, p1, p2, p3, p4)
+
+#define THROW_AGC(expclass, cause, grade, code, msg) throw expclass(__FILE__, __LINE__, cause, grade, code, msg)
+#define THROW_AGC_P1(expclass, cause, grade, code, msg, p1) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1)
+#define THROW_AGC_P2(expclass, cause, grade, code, msg, p1, p2) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1, p2)
+#define THROW_AGC_P3(expclass, cause, grade, code, msg, p1, p2, p3) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1, p2, p3)
+#define THROW_AGC_P4(expclass, cause, grade, code, msg, p1, p2, p3, p4) throw expclass(__FILE__, __LINE__, cause, grade, code, msg, p1, p2, p3, p4)
+
+
+
+
 #endif //_EXCEPTION_H_
