@@ -19,14 +19,15 @@ U_OBJS =CharsetUtil.cpp \
 	RegUtil.cpp \
 	StringUtil.cpp \
 	Exception.cpp \
-	SignalUtil.cpp
+	SignalUtil.cpp \
+	LuaUtil.cpp
 
 
 #链接库集合
 U_LIB =
 
 #头文件路径
-U_INC =
+U_INC = 
 
 #调试
 U_DEBUG = -D_DEBUG
