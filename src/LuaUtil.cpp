@@ -37,11 +37,15 @@ static LuaType Convert2LuaType(int type)
 
 	return  LuaType::_nil;
 }
-
+std::unique_ptr<LuaUtil> LuaUtil::newInstance()
+{
+	return make_unique<LuaUtil>();
+}
 LuaUtil::LuaUtil()
 :m_luaState(nullptr)
 {
 	m_luaState = luaL_newstate();
+	luaL_openlibs(m_luaState);
 }
 LuaUtil::~LuaUtil()
 {
@@ -54,12 +58,18 @@ LuaUtil::~LuaUtil()
 
 void LuaUtil::LoadLuaFile(std::string luaFile)
 {
-
+	if(luaL_loadfile(m_luaState, luaFile.c_str()) ||  lua_pcall(m_luaState,0,0,0))
+	{
+		THROW_P1(LuaException,"LoadLuaFile error; %s" , lua_tostring(m_luaState , -1));
+	}
 }
 
 void LuaUtil::LoadLuaString(std::string luaString)
 {
-
+	if(luaL_loadstring(m_luaState, luaString.c_str()) ||  lua_pcall(m_luaState,0,0,0))
+	{
+		THROW_P1(LuaException,"luaL_loadstring error; %s" , lua_tostring(m_luaState , -1));
+	}
 }
 
 void LuaUtil::SetLuaEnvPath(std::string evnPath)
@@ -149,15 +159,50 @@ ENDWHILE:
 
 }
 
+void LuaUtil::CallFunc(std::string funcName, const std::map<std::string,std::string>& tabIn , std::map<std::string,std::string> &tabOut)
+{
+		////开始调用lua脚本的转换函数 ,  函数返回结果：  ret_code   ret_table
+		GetGlobalVar(funcName.c_str()); ///把函数地址压入栈中
+		///生成tab参数
+		NewTable();
+		for(auto it : tabIn )
+			Insert2Tab(it.first, it.second);
+
+		if(LUA_OK != lua_pcall(m_luaState , 1 , 1 , 0))
+		{
+			THROW_P2(LuaException , "lua_pcall call [%s] return error; %s ",funcName.c_str() ,lua_tostring(m_luaState , -1));
+		}
+		if(!IsTable(1))
+		{
+			Pop(lua_gettop(m_luaState));
+			THROW(LuaException , "lua_pcall call return not a table");
+		}
+
+		TraverseTable(tabOut);
+}
+
 LuaUtil& LuaUtil::NewTable()
 {
 	lua_newtable(m_luaState);
 	return *this;
 }
 
+void LuaUtil::TraverseTable(std::map<std::string,std::string > &result)
+{
+	/* table is in the stack at -2 */
+	lua_pushnil(m_luaState);  /* first key */
+	while (lua_next(m_luaState, -2) != 0)
+	{
+		/* uses 'key' (at index -2) and 'value' (at index -1) */
+		result.insert(std::pair<std::string,std::string>(lua_tostring(m_luaState,-2),lua_tostring(m_luaState,-1)));
+		/* removes 'value'; keeps 'key' for next iteration */
+		lua_pop(m_luaState, 1);
+	}
+}
+
 LuaUtil& LuaUtil::Insert2Tab(int key , std::string value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -168,7 +213,7 @@ LuaUtil& LuaUtil::Insert2Tab(int key , std::string value)
 }
 LuaUtil& LuaUtil::Insert2Tab(int key , int value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -179,7 +224,7 @@ LuaUtil& LuaUtil::Insert2Tab(int key , int value)
 }
 LuaUtil& LuaUtil::Insert2Tab(int key , long value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -190,7 +235,7 @@ LuaUtil& LuaUtil::Insert2Tab(int key , long value)
 }
 LuaUtil& LuaUtil::Insert2Tab(int key , double value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -201,7 +246,7 @@ LuaUtil& LuaUtil::Insert2Tab(int key , double value)
 }
 LuaUtil& LuaUtil::Insert2Tab(int key , void* value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -213,7 +258,7 @@ LuaUtil& LuaUtil::Insert2Tab(int key , void* value)
 
 LuaUtil& LuaUtil::Insert2Tab(std::string key , std::string value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -224,7 +269,7 @@ LuaUtil& LuaUtil::Insert2Tab(std::string key , std::string value)
 }
 LuaUtil& LuaUtil::Insert2Tab(std::string key , int value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -235,7 +280,7 @@ LuaUtil& LuaUtil::Insert2Tab(std::string key , int value)
 }
 LuaUtil& LuaUtil::Insert2Tab(std::string key , long value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -246,7 +291,7 @@ LuaUtil& LuaUtil::Insert2Tab(std::string key , long value)
 }
 LuaUtil& LuaUtil::Insert2Tab(std::string key , double value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -258,7 +303,7 @@ LuaUtil& LuaUtil::Insert2Tab(std::string key , double value)
 
 LuaUtil& LuaUtil::Insert2Tab(std::string key , void* value)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -270,7 +315,7 @@ LuaUtil& LuaUtil::Insert2Tab(std::string key , void* value)
 
 std::string LuaUtil::GetTableData4String(int key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -285,7 +330,7 @@ std::string LuaUtil::GetTableData4String(int key)
 }
 int LuaUtil::GetTableData4Int(int key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -300,7 +345,7 @@ int LuaUtil::GetTableData4Int(int key)
 }
 long LuaUtil::GetTableData4Long(int key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -315,7 +360,7 @@ long LuaUtil::GetTableData4Long(int key)
 }
 double LuaUtil::GetTableData4Double(int key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -330,7 +375,7 @@ double LuaUtil::GetTableData4Double(int key)
 }
 void* LuaUtil::GetTableData4Ptr(int key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -346,7 +391,7 @@ void* LuaUtil::GetTableData4Ptr(int key)
 
 std::string LuaUtil::GetTableData4String(std::string key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -361,7 +406,7 @@ std::string LuaUtil::GetTableData4String(std::string key)
 }
 int LuaUtil::GetTableData4Int(std::string key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -376,7 +421,7 @@ int LuaUtil::GetTableData4Int(std::string key)
 }
 long LuaUtil::GetTableData4Long(std::string key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -391,7 +436,7 @@ long LuaUtil::GetTableData4Long(std::string key)
 }
 double LuaUtil::GetTableData4Double(std::string key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}
@@ -406,7 +451,7 @@ double LuaUtil::GetTableData4Double(std::string key)
 }
 void* LuaUtil::GetTableData4Ptr(std::string key)
 {
-	if(IsTable(-1))
+	if(!IsTable(-1))
 	{
 		THROW(LuaException , "stack top is not table.");
 	}

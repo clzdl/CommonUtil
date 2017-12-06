@@ -9,6 +9,7 @@
 #define INCLUDE_LUAUTIL_H_
 
 #include <string>
+#include <map>
 #include "TplUtil.h"
 #include "Exception.h"
 extern "C"
@@ -40,8 +41,9 @@ enum class LuaType
 class LuaUtil
 {
 public:
+	LuaUtil();
+	~LuaUtil();
 	static std::unique_ptr<LuaUtil> newInstance();
-
 	/**
 	 * 加载ｌｕａ文件
 	 */
@@ -62,6 +64,11 @@ public:
 	 *      strSign--入参， 入参>出参；  如：  ddssii>ssdd  ；  ‘>' 用于分隔入参出参
 	 */
 	void CallFunc(std::string funcName, const char* signString, ...);
+
+	/**
+	 *
+	 */
+	void CallFunc(std::string funcName, const std::map<std::string,std::string>& tabIn , std::map<std::string,std::string> &tabOut);
 
 	/**
 	 * 创建ｌｕａｔａｂｌｅ
@@ -172,9 +179,12 @@ public:
 	 * 指定元素的长度
 	 */
 	int Length(int index);
+
+	/**
+	 * 遍历ｔａｂｌｅ元素
+	 */
+	void TraverseTable(std::map<std::string,std::string > &result);
 private:
-	LuaUtil();
-	~LuaUtil();
 	LuaUtil(const LuaUtil &lu) = delete;
 	LuaUtil& operator = (const LuaUtil &lu ) = delete;
 
