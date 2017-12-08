@@ -7,10 +7,11 @@
 
 #ifndef INCLUDE_DATEUTIL_H_
 #define INCLUDE_DATEUTIL_H_
+#include "Exception.h"
 
 namespace CommonUtils
 {
-
+DECLARE_EXCEPTION(DateUtilException, Exception);
 class DateUtil
 {
 public:
@@ -36,6 +37,16 @@ public:
 	 *@retrun:
 	 */
 	static char* GetCurrentTime(int format, char* stime);
+
+	/**
+	 * 获取指定年月的天数
+	 */
+	static int GetDaysOfMonth(int y,int m);
+
+	/**
+	 * 获取月份间隔数，不含当月
+	 */
+	static int DiffMons(int begMon , int endMon);
 private:
 	DateUtil();
 	DateUtil(const DateUtil &du);

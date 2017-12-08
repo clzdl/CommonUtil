@@ -12,7 +12,8 @@
 #include <fstream>
 #include <stdlib.h>
 #include "string.h"
- #include <sys/time.h>
+#include <sys/time.h>
+
 
 namespace CommonUtils
 {
@@ -90,6 +91,30 @@ char* DateUtil::GetCurrentTime(int format, char* stime)
     strcpy(stime, datetimestring);
 
     return stime;
+}
+
+//获取指定月份的天数
+int DateUtil::GetDaysOfMonth(int y,int m)
+{
+    int day[]= {31,28,31,30,31,30,31,31,30,31,30,31};
+    if (2 == m)
+        return ((0 == y%4 && 0 != y%100 )||(0==y%400)) ? 29 : 28;
+    else
+        return day[m-1];
+}
+
+int DateUtil::DiffMons(int begMon , int endMon)
+{
+	if(begMon < 197001 || begMon >  999999 || endMon< 197001 || endMon > 999999)
+		THROW(DateUtilException , "DiffMons parameter error,must　yyyymmdd");
+
+	if(begMon > endMon)
+		std::swap(begMon,endMon);
+
+	if(begMon/100 == endMon/100)
+		return endMon-begMon;
+	else
+		return (endMon/100-begMon/100)*12 +(12-begMon%100) + endMon%100;
 }
 
 }
