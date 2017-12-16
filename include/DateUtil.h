@@ -47,6 +47,20 @@ public:
 	 * 获取月份间隔数，不含当月
 	 */
 	static int DiffMons(int begMon , int endMon);
+	/**
+	 * 获取间隔的小时，format:yyyymmddhh24
+	 */
+	static time_t DiffHours(long begTime, int long endTime);
+
+	/**
+	 * 获取间隔的天数
+	 */
+	static time_t DiffDays(int begDay, int  endDay);
+
+	/**
+	 * 增减后的日期yyyymmdd
+	 */
+	static int AddDays(int begTime, int addDays);
 private:
 	DateUtil();
 	DateUtil(const DateUtil &du);
