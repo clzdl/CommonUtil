@@ -455,6 +455,20 @@ std::string StringUtil::toHexString(const std::string &str)
 	return ret;
 };
 
+
+//字节流转换为十六进制字符串的另一种实现方式
+char* StringUtil::toHexString( const char *sSrc,  char *sDest, int nSrcLen )
+{
+    int  i;
+    char szTmp[3];
+
+    for( i = 0; i < nSrcLen; i++ )
+    {
+        sprintf( szTmp, "%02X", (unsigned char) sSrc[i] );
+        memcpy( &sDest[i * 2], szTmp, 2 );
+    }
+    return sDest;
+}
     
 int StringUtil::command(const std::string cmd,	std::vector< std::string > & lines )
 {

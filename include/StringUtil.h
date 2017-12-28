@@ -468,6 +468,10 @@ class StringUtil {
     //==============================================================================
     static std::string toHexString(const std::string &str);
 
+    /**
+     * 字节流转换为16进制字符串
+     */
+    static char* toHexString( const char *sSrc,  char *sDest, int nSrcLen );
     
 
     /*@action:用于得到一个命令执行的输出行
