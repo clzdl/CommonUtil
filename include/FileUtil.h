@@ -89,7 +89,7 @@ public:
 	 *Return   : true 是，false 否
 	 *Desc     : pathname支持简单通配
 	 */
-	bool IsExistFileByRe(const char *pathname );
+	static bool IsExistFileByRe(const char *pathname );
 
 	/*
 	 *Function : 文件剪切、重命名
@@ -97,7 +97,7 @@ public:
 	 *Output   : 无
 	 *Return   : SUCCESS 成功，FAIL 失败
 	 */
-	int MultiRename(const char *src, const char *dest );
+	static int MultiRename(const char *src, const char *dest );
 private:
 	FileUtil();
 	FileUtil(const FileUtil &fu);
