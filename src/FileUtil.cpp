@@ -156,5 +156,41 @@ time_t FileUtil::GetFileLastModificationTime(const char* strFileName)
 	return((long)fstat.st_mtime);
 }
 
+bool FileUtil::IsExistFileByRe(const char *pathname )
+{
+    int  ret = 0;
+    char str[512] = {0};
+
+    snprintf( str, sizeof(str), "ls %s >/dev/null 2>&1", pathname );
+    ret = system( str );
+    if( ret != 0){
+        return false;
+    }
+
+    return true;
+}
+
+
+/*
+ *Function : 文件剪切、重命名
+ *Input    : src 源文件，dest 目的文件
+ *Output   : 无
+ *Return   : SUCCESS 成功，FAIL 失败
+ */
+int FileUtil::MultiRename(const char *src, const char *dest )
+{
+    int  ret = 0;
+    char str[512] = {0};
+
+    snprintf( str, sizeof(str), "mv %s %s", src, dest );
+    ret = system( str );
+    if( ret != 0)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 }
 
