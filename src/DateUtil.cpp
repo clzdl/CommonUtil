@@ -162,7 +162,7 @@ time_t DateUtil::DiffDays(int begDay, int  endDay)
 	return DiffHours(begDay *100 , endDay*100);
 }
 
-int AddDays(int begTime, int addDays)
+int DateUtil::AddDays(int begTime, int addDays)
 {
 	int begYear = begTime/10000;
 	int begMon = begTime/100%100 - 1;
