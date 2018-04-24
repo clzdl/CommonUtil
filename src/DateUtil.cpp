@@ -187,7 +187,7 @@ int DateUtil::AddDays(int begTime, int addDays)
 	timer += addDays * 3600 * 24;
 	struct tm tblock;
 	localtime_r(&timer , &tblock);
-	return (tblock.tm_year) + 1900 * 10000 + (tblock.tm_mon + 1) * 100 + tblock.tm_mday;
+	return (tblock.tm_year + 1900) * 10000 + (tblock.tm_mon + 1) * 100 + tblock.tm_mday;
 }
 
 }
