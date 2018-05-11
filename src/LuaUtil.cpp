@@ -56,6 +56,12 @@ LuaUtil::~LuaUtil()
 	}
 }
 
+
+lua_State* LuaUtil::GetLuaState()
+{
+    return m_luaState;
+}
+
 void LuaUtil::LoadLuaFile(std::string luaFile)
 {
 	if(luaL_loadfile(m_luaState, luaFile.c_str()) ||  lua_pcall(m_luaState,0,0,0))
@@ -545,6 +551,38 @@ int LuaUtil::Length(int index)
 	int len = lua_tointeger(m_luaState,-1);
 	Pop(1);
 	return len;
+}
+
+void LuaUtil::PushString(std::string value)
+{
+    lua_pushstring(m_luaState, value.c_str());
+}
+void LuaUtil::PCall(int inNum, int outNum)
+{
+    if(0 != lua_pcall(m_luaState, inNum, outNum, 0))
+    {
+        THROW_P1(LuaException , "error running funcion:dispatchansfer:%s", std::string(lua_tostring(m_luaState, -1)));
+    }
+}
+
+long LuaUtil::ToInteger(int pos)
+{
+    return lua_tointeger(m_luaState, pos);
+}
+
+std::string LuaUtil::ToString(int pos)
+{
+    const char *value = lua_tostring(m_luaState, pos);
+    if(nullptr != value)
+    {
+        return value;
+    }
+    return "";
+}
+
+int LuaUtil::GetTop()
+{
+    return lua_gettop(m_luaState);
 }
 
 }

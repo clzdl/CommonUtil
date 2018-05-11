@@ -44,6 +44,8 @@ public:
 	LuaUtil();
 	~LuaUtil();
 	static std::unique_ptr<LuaUtil> newInstance();
+
+	lua_State* GetLuaState();
 	/**
 	 * 加载ｌｕａ文件
 	 */
@@ -184,6 +186,28 @@ public:
 	 * 遍历ｔａｂｌｅ元素
 	 */
 	void TraverseTable(std::map<std::string,std::string > &result);
+
+	/**
+	 * 字符串压入栈
+	 */
+	void PushString(std::string value);
+	/**
+	 * 从栈总取数字
+	 */
+	long ToInteger(int pos);
+	/**
+	 * 从栈中取字符串
+	 */
+	std::string ToString(int pos);
+
+	/**
+	 * 获取栈顶位置,即栈中元素数
+	 */
+	int GetTop();
+	/**
+	 * 调用lua函数
+	 */
+	void PCall(int inNum, int outNum);
 private:
 	LuaUtil(const LuaUtil &lu) = delete;
 	LuaUtil& operator = (const LuaUtil &lu ) = delete;
