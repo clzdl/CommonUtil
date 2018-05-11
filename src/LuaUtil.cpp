@@ -80,7 +80,15 @@ void LuaUtil::LoadLuaString(std::string luaString)
 
 void LuaUtil::SetLuaEnvPath(std::string evnPath)
 {
-
+    lua_getglobal(m_luaState, "package" );
+    lua_getfield(m_luaState, -1, "cpath" ); // get field "path" from table at top of stack (-1)
+    std::string cur_path = lua_tostring(m_luaState, -1 ); // grab path string from top of stack
+    cur_path.append( ";" ); // do your path magic here
+    cur_path.append( evnPath );
+    lua_pop(m_luaState, 1 ); // get rid of the string on the stack we just pushed on line 5
+    lua_pushstring(m_luaState, cur_path.c_str() ); // push the new one
+    lua_setfield(m_luaState, -2, "cpath" ); // set the field "path" in table at -2 with value at top of stack
+    lua_pop(m_luaState, 1 ); // get rid of package table from top of stack
 }
 
 void LuaUtil::CallFunc(std::string funcName, const char* signString , ...)
@@ -561,7 +569,7 @@ void LuaUtil::PCall(int inNum, int outNum)
 {
     if(0 != lua_pcall(m_luaState, inNum, outNum, 0))
     {
-        THROW_P1(LuaException , "error running funcion:dispatchansfer:%s", std::string(lua_tostring(m_luaState, -1)));
+        THROW_P1(LuaException , "error running funcion :%s", lua_tostring(m_luaState, -1));
     }
 }
 
